@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<head>
+  <title></title>
+  
+  <style type="text/css" media="screen">
+  .red {
+    color: red;
+  }
+  </style>
+</head>
+<body>
+  <form action="" method="get" accept-charset="utf-8">
+    <textarea id="message" name="message" rows="8" cols="40"></textarea>
+    <p id="charcount"></p>
+    <p id="errors"></p>
+    <p><input type="submit" value="Continue &rarr;"></p>
+  </form>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    $(function() {
+      var urlregexp = /(http|https):\/\/[^\s]+/;
+	  var textarea = $('#message');
+	  var charcount = $('#charcount');
+	  var errors = $('#errors');
+	   
+      textarea.keyup(function() {
+        var words = getWords($(this));
+        var num = 0;
+		var content =  textarea.val();
+		var characters = 140;
+        for (var i = 0; i < words.length; i++) {
+          if (urlregexp.test(words[i])) {
+            num += 20;
+          } else {
+            num += words[i].length;
+          }
+        }
+		characters -= num;
+		characters -= findAllChars(content, " ");
+		characters -= findAllChars(content, "\n");
+		
+        charcount.html(characters + 1);
+
+        if (characters < 0) {
+          textarea.val(content.substr(0, 140));
+          charcount.addClass('red');
+        } else {
+          charcount.removeClass('red');
+        }
+      });
+
+      $('[type="submit"]').click(function(e) {
+      
+        if (textarea.val().length == 0) {
+          errors.html('Your message is empty!').addClass("red");
+          return false;
+        }
+        if (textarea.val().length > 140) {
+          errors.html('Your message is too long!')
+          return false;
+        }
+
+        var words = getWords(textarea);
+		console.log(words);
+        for (var i = 0; i < words.length; i++) {
+          if (/(shit|fuck|bollocks)/.test(words[i])) {
+            $('#errors').html('Your message contains profanity!').addClass("red");
+            return false;
+          }
+        }
+        
+        textarea.val(words.join(" "));
+        //return false;
+      });
+      
+      var getWords = function(el){
+	  	return el.val().split(/\s+/);
+      };
+      
+      var findAllChars = function(str, niddle){
+      	count = 0;
+		pos = str.indexOf(niddle);
+		
+		while ( pos != -1 ) {
+		   count++;
+		   pos = str.indexOf(niddle,pos + 1 );
+		}
+		return count;
+      }
+     
+    });
+	
+	//Count white spaces as one in a row.
+  </script>
+</body>
+</html>
