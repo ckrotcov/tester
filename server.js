@@ -1,4 +1,3 @@
-//jesse@remind101.com
 var express = require('express');
 var handlebars = require('handlebars');
 var mongo = require('mongodb');
